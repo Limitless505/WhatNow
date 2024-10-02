@@ -1,7 +1,7 @@
 package com.example.whatnow
 
 data class News(
-    val artricles: ArrayList<Article>
+    val articles: ArrayList<Article>
 
 )
 

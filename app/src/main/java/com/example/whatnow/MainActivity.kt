@@ -22,9 +22,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
-        loadNews()
         setContentView(binding.root)
-        }
+        loadNews()
+    }
 
     private fun loadNews() {
         val retrofit = Retrofit
@@ -36,13 +36,15 @@ class MainActivity : AppCompatActivity() {
         val c = retrofit.create(NewsCallable::class.java)
         c.getNews().enqueue(object : Callback<News> {
             override fun onResponse(call: Call<News>, response: Response<News>) {
-                val articles = response.body()?.artricles!!
+                Log.d("trace", "Data: ${response.body()?.articles}")
+                val articles = response.body()?.articles ?: arrayListOf()
 
-                articles.removeAll{
+                articles.removeAll {
                     it.title == "[Removed]"
                 }
 
-                showNews(articles)
+
+                binding.newsList.adapter = NewsAdapter(this@MainActivity, articles)
                 binding.progress.isVisible = false
                 binding.swipeRefresh.isRefreshing = false
             }
@@ -54,10 +56,4 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-
-    private fun showNews(articles: ArrayList<Article>) {
-        val adapter = NewsAdapter(this, articles)
-        binding.newsList.adapter = adapter
-    }
-
 }
